@@ -4,11 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.swing.*;
 
 /* 
- * spring layout tutorial:
- *      https://www.youtube.com/watch?v=eosxG6M0hMA  
- * 
  * borrowed code from:
  *      loadImage() = https://coderanch.com/t/338802/java/getScaledInstance-scale-images
  *      Rotate() = https://stackoverflow.com/questions/8639567/java-rotating-images 
@@ -17,16 +15,14 @@ import javax.imageio.ImageIO;
 
 public class MyImage {
 
-    
     private static BufferedImage rotated_img;
     private static int abs_x_co, abs_y_co;
     private static double angle;
-    private final int scale_dim = 100;
+    private final int scale_dim = 50;
 
-    public Image img;
+    private ImageIcon img;
     
     
-
     /*****************************************************
      * FUNCTIONS
      * ***************************************************
@@ -112,12 +108,14 @@ public class MyImage {
 
     /*
      * rotate the img
-     *      - angle param in degrees
+     *      - angle param in degrees, rotates counter clock wise
      *      - size of new image is the size of original square image's diagonal diameter
      *          - rotation angle doesn't matter
+     *      - point of rotation is the center of the image
      */
     private static BufferedImage Rotate(BufferedImage buff_img) {
         double angle_deg  = angle;
+        
                     //  =  AdjustRotationDeg(x_co, y_co);
         int dim = buff_img.getWidth();              //images will always be square
         
@@ -137,8 +135,8 @@ public class MyImage {
 
     /*
      * Constructor
-     *      img = final image
-     *      num_stitches = number of stitches in a loop
+     *      img = final image as imageicon
+     *      
      */
     public MyImage(String img_name, int abs_x_co, int abs_y_co, double angle) {
         //private
@@ -146,25 +144,24 @@ public class MyImage {
         this.abs_y_co = abs_y_co;
         this.angle = angle;
 
-        //private
         rotated_img  = Rotate(LoadImage(img_name));
-
-        //public
-        img = rotated_img.getScaledInstance(scale_dim, scale_dim, Image.SCALE_SMOOTH);
+        img = new ImageIcon(rotated_img.getScaledInstance(scale_dim, scale_dim, Image.SCALE_SMOOTH));
     }
 
     public MyImage(String img_name) {
         abs_x_co = 0;
         abs_y_co = 0;
         rotated_img = LoadImage(img_name);
-        img = img = rotated_img.getScaledInstance(scale_dim, scale_dim, Image.SCALE_SMOOTH);
+        img = new ImageIcon(rotated_img.getScaledInstance(scale_dim, scale_dim, Image.SCALE_SMOOTH)) ;
     }
 
 
     public int GetScaledDim() {
         return scale_dim;
     }
-    
+    public ImageIcon GetImgIcon() {
+        return img;
+    }
 
     public static void main(String[] args)  {
 

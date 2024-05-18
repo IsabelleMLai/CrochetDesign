@@ -24,7 +24,8 @@ public class Crochet {
 
         Rows row1 = new Rows(6);
         
-        MyPanel panel = new MyPanel(frame_dim, frame_dim, imag.img);
+        MyPanel panel = new MyPanel(frame_dim, row1.GetRow(), row1.GetXCoords(), row1.GetYCoords(), row1.GetAngles());
+
         MyFrame frame = new MyFrame(frame_dim, panel);
         frame.setVisible(true);
 

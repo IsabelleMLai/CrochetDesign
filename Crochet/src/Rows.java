@@ -1,14 +1,14 @@
-import java.awt.*;
 import java.util.ArrayList;
+import javax.swing.*;
 
 public class Rows {
-    private ArrayList<Image> row;
+    private ArrayList<ImageIcon> row;
     private ArrayList<Integer> img_x_co;
     private ArrayList<Integer> img_y_co;
     private ArrayList<Double> angles;
     private int num_stitches;
 
-    //private Double x_co, y_co;
+    //private
     private int sc_dim;
     private final int padding = 5;     //padding around the edge of the row
 
@@ -55,7 +55,7 @@ public class Rows {
         Double delta_x = CenterRadius()*(Math.sin(curr_angle));
         if(curr_angle <=180) {
             curr_x = relative_x+((int)(Math.ceil(delta_x)));
-        } else if(curr_angle<360) {
+        } else if(curr_angle < 360) {
             curr_x = relative_x-((int)(Math.ceil(delta_x)));
         }
         return curr_x;
@@ -74,9 +74,10 @@ public class Rows {
     private void CalcCoords() {
         //align  first st as no rotation, centered at the top middle
         
-        Double angle_increment = AnglePerSt_Deg();
+        Double angle_increment = (AnglePerSt_Deg());
 
         int top_x_co = AlignTopLeft_CenterCoords();
+        System.out.println(top_x_co);
         int top_y_co = (padding+(sc_dim/2));
 
         int bottom_x_co = top_x_co;
@@ -88,24 +89,30 @@ public class Rows {
         int relative_y = curr_y;
 
         Double curr_angle = 0.0;    //in degrees
+        Double origin_angle=0.0;
         Double delta_x = 0.0;
         Double delta_y = 0.0;
 
         for(int i=0; i<num_stitches; i++) {
+            
             img_x_co.add(curr_x);
             img_y_co.add(curr_y);
-
-            curr_angle += angle_increment;
+            angles.add(curr_angle);
+            
+            curr_angle = curr_angle+ angle_increment;
+            
             if(curr_angle>90) {
                 if(curr_angle<270) {
-                    curr_angle = Math.abs((180.0-curr_angle));
+                    origin_angle = Math.abs((180.0-curr_angle));
                 }
                 else {
-                    curr_angle = 360-curr_angle;
+                    origin_angle = 360-curr_angle;
                 }
-            } 
+            } else {
+                origin_angle = curr_angle;
+            }
             
-            if(curr_angle<=90 || curr_angle>=270)  {
+            if((curr_angle<=90) || (curr_angle>=270))  {
                 relative_x = top_x_co;
                 relative_y = top_y_co;
             } else {
@@ -113,8 +120,8 @@ public class Rows {
                 relative_y = bottom_y_co;
             }
 
-            curr_x = CurrX(curr_angle, relative_x);
-            curr_y = CurrY(curr_angle, relative_y);
+            curr_x = CurrX(origin_angle, relative_x);
+            curr_y = CurrY(origin_angle, relative_y);
         }
 
     }
@@ -125,13 +132,12 @@ public class Rows {
      */
     private void CreateStitches() {
         for(int i=0; i<num_stitches; i++) {
-
-            MyImage sc = new MyImage("SC.png", (img_x_co.get(i)), 
-                (img_y_co.get(i)), (angles.get(i)));
-
+            
+            MyImage sc = new MyImage("SC.png", (img_x_co.get(i)), (img_y_co.get(i)), (angles.get(i)));
+            
            //creating sc should format the  img to be the correct rotation
            //img_x_coord and y should already be absolute locations and are find
-            row.add(sc.img);
+            row.add(sc.GetImgIcon());
         } 
     }
     
@@ -140,18 +146,39 @@ public class Rows {
      * Constructor
      */
     public Rows(int num_stitches) {
-        row = new ArrayList<>();
-        img_x_co = new ArrayList<>();
-        img_y_co = new ArrayList<>();
-        angles = new ArrayList<>();
+        row = new ArrayList<ImageIcon>();
+        img_x_co = new ArrayList<Integer>();
+        img_y_co = new ArrayList<Integer>();
+        angles = new ArrayList<Double>();
         this.num_stitches = num_stitches;
 
         MyImage sc = new MyImage("SC.png");
         sc_dim = sc.GetScaledDim();      //need the scaled img dimensions to find correct coords
+        
+        CalcCoords();
+        CreateStitches();
+        
     }
 
-    public ArrayList<Image> GetRow() {
+    public ArrayList<ImageIcon> GetRow() {
         return row;
     }
+
+    public ArrayList<Integer> GetXCoords() {
+        return img_x_co;
+    }
+
+    public ArrayList<Integer> GetYCoords() {
+        return img_y_co;
+    }
+
+    public ArrayList<Double> GetAngles() {
+       return angles;
+    }
+
+    public static void main(String[] args)  {
+
+    }
+    
 
 }
