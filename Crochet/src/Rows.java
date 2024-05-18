@@ -1,30 +1,35 @@
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 
 public class Rows {
+    //row size will be 1> than the other arraylists sizes since it includes center image
     private ArrayList<ImageIcon> row;
+
     private ArrayList<Integer> img_x_co;
     private ArrayList<Integer> img_y_co;
     private ArrayList<Double> angles;
-    private int num_stitches;
 
-    //private
+    private int center_co;
+    private int num_stitches;
     private int sc_dim;
-    private final int padding = 5;     //padding around the edge of the row
+    private Double inner_rad;
+    private Double outer_rad;
+
+    private final int padding = 10;     //padding around the edge of the row
 
     
     /*  
-     * Calculate the image radii = bounds of the row
+     * Calculate the image radii = bounds of the row, and absolute center coordinate
+     * if we want the image aligned at top left of frame
+     *      - square = x and y  are the same
+     *      - will use top left of the imageicons in layout
      */
-    private Double InnerRadius() {
+    private void CalcRadii_Center() {
         int inner_circumf = num_stitches*sc_dim;
-        return ((Double.valueOf(inner_circumf))/(2*Math.PI));
-    }
-    private Double OuterRadius() {
-        return (InnerRadius()+sc_dim);
-    }
-    private Double CenterRadius() {
-        return  (InnerRadius()+(sc_dim/2));
+        inner_rad= ((Double.valueOf(inner_circumf))/(2*Math.PI));
+        outer_rad= (inner_rad+sc_dim);
+        center_co = 2*((int) (outer_rad+padding));
     }
 
     /*
@@ -35,63 +40,73 @@ public class Rows {
         return (360.0/(Double.valueOf(num_stitches)));
     }
 
+    
+    
     /*
-     * calculate the coords of the center of the row
-     * if we want the image aligned at top left of frame
-     *      - square = x and y  are the same
+     * Add center image to arraylist
+     *      - global variables updated to correct values at this point with 
+     *        CalcRadii_Center call
      */
-    private int AlignTopLeft_CenterCoords() {
-        return ((int) (OuterRadius()+padding));
+    private void AddCenterImg() {
+        CalcRadii_Center();
+        MyImage center = new MyImage("Center_10x10.png");
+        row.add(center.GetImgIcon());
     }
-
-    
     
     
     /*
-     * math used to solve for absolute coords in CalcCoords
+     * math used to solve for relative sc coords in CalcCoords
+     *      - top_bottom = 1 means relative is top, 0=relative is bottom
+     *      - -x = left of center, +x= right of center, -y = below centre, +y = abovee center
+     *      - rotation  is counterclockwise
      */
-    private int CurrX(Double curr_angle, int  relative_x) {
-        int curr_x = 0;
-        Double delta_x = CenterRadius()*(Math.sin(curr_angle));
-        if(curr_angle <=180) {
-            curr_x = relative_x+((int)(Math.ceil(delta_x)));
-        } else if(curr_angle < 360) {
-            curr_x = relative_x-((int)(Math.ceil(delta_x)));
+    private int CurrX(Double relative_angle, Double actual_angle) {
+
+        Double delta_x = Math.abs(inner_rad*(Math.sin(relative_angle)));     //rsin(theta)
+        
+        if(actual_angle<=180) {
+            
+            return ((int)Math.floor(delta_x));
+        } 
+        return ((int)Math.ceil(delta_x));
+
+        
+    }
+    private int CurrY(Double relative_angle, Double actual_angle) {
+
+        Double delta_y = Math.abs(inner_rad*(Math.cos(relative_angle)));      //rcos(theta))
+       
+        if((actual_angle>=90) &&(actual_angle<=270)) {
+            
+            return ((int)(Math.floor(delta_y)));
         }
-        return curr_x;
-    }
 
-    private int CurrY(Double curr_angle, int relative_y) {
-        Double delta_y = CenterRadius()*(1-(Math.cos(curr_angle)));
-        return (relative_y-((int)(Math.ceil(delta_y))));
+        return ((int)(Math.ceil(delta_y)));
     }
 
     /*
      * Fills arraylists of x and y coords with cords for each st
-     *      - absolute coords
-     *      - go around clockwise
+     *      - -x = left of center, +x= right of center, -y = below centre, +y = abovee center
+     *      - rotation  is counterclockwise
      */
     private void CalcCoords() {
         //align  first st as no rotation, centered at the top middle
-        
         Double angle_increment = (AnglePerSt_Deg());
 
-        int top_x_co = AlignTopLeft_CenterCoords();
-        System.out.println(top_x_co);
-        int top_y_co = (padding+(sc_dim/2));
+        AddCenterImg();
 
-        int bottom_x_co = top_x_co;
-        int bottom_y_co = AlignTopLeft_CenterCoords()+ ((int)Math.ceil(CenterRadius()));
-
+        int top_x_co = 0;
+        int top_y_co = (int) Math.ceil(inner_rad);
+        //bottom_x_co is still centered, so don't need
+        int bottom_y_co = -1*((int) Math.floor(inner_rad));
+    
         int curr_x = top_x_co;
         int curr_y = top_y_co;
-        int relative_x = curr_x;
+        
         int relative_y = curr_y;
 
-        Double curr_angle = 0.0;    //in degrees
-        Double origin_angle=0.0;
-        Double delta_x = 0.0;
-        Double delta_y = 0.0;
+        Double curr_angle = 0.0;    //in degrees, >0 = counterclockwise direction
+        Double relative_angle = curr_angle;     //angle to use sin and cos on
 
         for(int i=0; i<num_stitches; i++) {
             
@@ -99,29 +114,23 @@ public class Rows {
             img_y_co.add(curr_y);
             angles.add(curr_angle);
             
-            curr_angle = curr_angle+ angle_increment;
+            curr_angle = curr_angle + angle_increment;
             
-            if(curr_angle>90) {
-                if(curr_angle<270) {
-                    origin_angle = Math.abs((180.0-curr_angle));
-                }
-                else {
-                    origin_angle = 360-curr_angle;
-                }
-            } else {
-                origin_angle = curr_angle;
-            }
-            
-            if((curr_angle<=90) || (curr_angle>=270))  {
-                relative_x = top_x_co;
-                relative_y = top_y_co;
-            } else {
-                relative_x = bottom_x_co;
+            if ((curr_angle>=90) && (curr_angle<=270)) {    //below the center
                 relative_y = bottom_y_co;
+                relative_angle = Math.abs((180.0 - curr_angle));
+            } else {                                        //above the center
+                relative_y =  top_y_co;
+                if(curr_angle>=270) {                       
+                    relative_angle = 360.0-curr_angle;
+                } else {
+                    relative_angle = curr_angle;
+                }
             }
-
-            curr_x = CurrX(origin_angle, relative_x);
-            curr_y = CurrY(origin_angle, relative_y);
+            
+            curr_x = CurrX(relative_angle, curr_angle);
+            curr_y = CurrY(relative_angle, curr_angle);
+            
         }
 
     }
@@ -133,8 +142,8 @@ public class Rows {
     private void CreateStitches() {
         for(int i=0; i<num_stitches; i++) {
             
-            MyImage sc = new MyImage("SC.png", (img_x_co.get(i)), (img_y_co.get(i)), (angles.get(i)));
-            
+            MyImage sc = new MyImage("SC.png", (angles.get(i)));
+            System.out.println(img_x_co.get(i)+" "+img_y_co.get(i));
            //creating sc should format the  img to be the correct rotation
            //img_x_coord and y should already be absolute locations and are find
             row.add(sc.GetImgIcon());
@@ -150,6 +159,11 @@ public class Rows {
         img_x_co = new ArrayList<Integer>();
         img_y_co = new ArrayList<Integer>();
         angles = new ArrayList<Double>();
+
+        center_co = padding;
+        inner_rad =  0.0;
+        outer_rad = 0.0;
+
         this.num_stitches = num_stitches;
 
         MyImage sc = new MyImage("SC.png");
@@ -174,6 +188,10 @@ public class Rows {
 
     public ArrayList<Double> GetAngles() {
        return angles;
+    }
+
+    public int  GetCenterCoord() {
+        return center_co;
     }
 
     public static void main(String[] args)  {

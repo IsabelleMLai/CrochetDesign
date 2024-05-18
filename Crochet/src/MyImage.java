@@ -16,9 +16,9 @@ import javax.swing.*;
 public class MyImage {
 
     private static BufferedImage rotated_img;
-    private static int abs_x_co, abs_y_co;
+    // private static int abs_x_co, abs_y_co;
     private static double angle;
-    private final int scale_dim = 50;
+    private int scale_dim;
 
     private ImageIcon img;
     
@@ -138,19 +138,33 @@ public class MyImage {
      *      img = final image as imageicon
      *      
      */
-    public MyImage(String img_name, int abs_x_co, int abs_y_co, double angle) {
+    public MyImage(String img_name, double angle) {
         //private
-        this.abs_x_co = abs_x_co;
-        this.abs_y_co = abs_y_co;
+        // this.abs_x_co = abs_x_co;
+        // this.abs_y_co = abs_y_co;
         this.angle = angle;
+
+        if(img_name.equals( "Center_10x10.png")) {
+            scale_dim = 50;
+        } else {
+            scale_dim = 50;
+        }
 
         rotated_img  = Rotate(LoadImage(img_name));
         img = new ImageIcon(rotated_img.getScaledInstance(scale_dim, scale_dim, Image.SCALE_SMOOTH));
     }
 
     public MyImage(String img_name) {
-        abs_x_co = 0;
-        abs_y_co = 0;
+        
+        angle = 0.0;
+        scale_dim = 1;
+
+        if(img_name.equals("Center_10x10.png")) {
+            scale_dim = 50;
+        } else {
+            scale_dim = 50;
+        }
+
         rotated_img = LoadImage(img_name);
         img = new ImageIcon(rotated_img.getScaledInstance(scale_dim, scale_dim, Image.SCALE_SMOOTH)) ;
     }

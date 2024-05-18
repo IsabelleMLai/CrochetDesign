@@ -15,13 +15,14 @@ import javax.swing.*;
  * have to .setContentPanel in frame 
  */
 public class MyPanel extends JPanel{
-    private int panel_dim;
+    private int panel_dim, center_co;
     private ArrayList<ImageIcon> img;
     private ArrayList<JLabel> img_labels;
     private ArrayList<Integer> x_co, y_co;
     private ArrayList<Double> angles;
 
     private SpringLayout layout;
+    
 
     // @Override
     // protected void paintComponent(Graphics g) {
@@ -35,7 +36,7 @@ public class MyPanel extends JPanel{
      */
     private void ConvertToJLabel() {
         
-        for(int i=1; i<img.size(); i++) {
+        for(int i=0; i<img.size(); i++) {
             JLabel temp = new JLabel(img.get(i));
             // temp.setBounds(1, 1, 100, 100);
             // temp.setLocation((i+5), (i+5));
@@ -58,9 +59,21 @@ public class MyPanel extends JPanel{
     }
 
     private void SetUpLayout() {
-        // layout.putConstraint(SpringLayout.WEST, img_labels.get(0), 50, SpringLayout.WEST, this);
-        // layout.putConstraint(SpringLayout.WEST, img_labels.get(1), 10, SpringLayout.EAST, img_labels.get(0));
-        // layout.putConstraint(SpringLayout.WEST, img_labels.get(2), 10, SpringLayout.WEST, img_labels.get(1));
+        //set up center first
+        layout.putConstraint(SpringLayout.WEST, img_labels.get(0), center_co, SpringLayout.WEST, this);
+        layout.putConstraint(SpringLayout.NORTH, img_labels.get(0), center_co, SpringLayout.NORTH, this);
+        
+        for(int i=1; i<img_labels.size(); i++) {
+            if(angles.get(i-1)<=90) {
+                layout.putConstraint(SpringLayout.EAST, img_labels.get(i), x_co.get(i-1), SpringLayout.WEST, img_labels.get(0));
+                layout.putConstraint(SpringLayout.SOUTH, img_labels.get(i), y_co.get(i-1), SpringLayout.NORTH, img_labels.get(0));
+            } else if(angles.get(i-1)<=180) {
+                layout.putConstraint(SpringLayout.EAST, img_labels.get(i), x_co.get(i-1), SpringLayout.WEST, img_labels.get(0));
+                layout.putConstraint(SpringLayout.NORTH, img_labels.get(i), y_co.get(i-1), SpringLayout.SOUTH, img_labels.get(0));
+            
+            }
+            
+        }        
         
     }
 
@@ -68,12 +81,13 @@ public class MyPanel extends JPanel{
      * Constructor
      *      - gives  the panel  the image and its details
      */
-    public MyPanel(int panel_dim, ArrayList<ImageIcon> img, 
+    public MyPanel(int panel_dim, ArrayList<ImageIcon> img, int center_co,
             ArrayList<Integer> x_co, ArrayList<Integer> y_co, 
             ArrayList<Double> angles) {
 
         this.panel_dim = panel_dim;
         this.img = img;
+        this.center_co = center_co;
         this.x_co = x_co;
         this.y_co = y_co;
         this.angles = angles;
