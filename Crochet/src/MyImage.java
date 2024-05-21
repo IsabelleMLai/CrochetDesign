@@ -145,7 +145,7 @@ public class MyImage {
         this.angle = angle;
 
         if(img_name.equals( "Center_10x10.png")) {
-            scale_dim = 50;
+            scale_dim = 10;
         } else {
             scale_dim = 50;
         }
@@ -160,7 +160,7 @@ public class MyImage {
         scale_dim = 1;
 
         if(img_name.equals("Center_10x10.png")) {
-            scale_dim = 50;
+            scale_dim = 10;
         } else {
             scale_dim = 50;
         }

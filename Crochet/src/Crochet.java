@@ -22,7 +22,7 @@ public class Crochet {
         // myFrame.add(label);
         // myFrame.setVisible(true);
 
-        Rows row1 = new Rows(6);
+        Rows row1 = new Rows(10);
         
         MyPanel panel = new MyPanel(frame_dim, row1.GetRow(), 
                 row1.GetCenterCoord(), row1.GetXCoords(), 

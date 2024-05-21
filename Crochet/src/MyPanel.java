@@ -62,15 +62,26 @@ public class MyPanel extends JPanel{
         //set up center first
         layout.putConstraint(SpringLayout.WEST, img_labels.get(0), center_co, SpringLayout.WEST, this);
         layout.putConstraint(SpringLayout.NORTH, img_labels.get(0), center_co, SpringLayout.NORTH, this);
-        
-        for(int i=1; i<img_labels.size(); i++) {
+        // JLabel center = new JLabel(img.get(0));
+
+        for(int i=1; i<3; i++) {
+            // img_labels.size()
+            System.out.println("x co = "+x_co.get(i-1)+" y co = "+y_co.get(i-1)+" angles = "+angles.get(i-1));  //
             if(angles.get(i-1)<=90) {
-                layout.putConstraint(SpringLayout.EAST, img_labels.get(i), x_co.get(i-1), SpringLayout.WEST, img_labels.get(0));
-                layout.putConstraint(SpringLayout.SOUTH, img_labels.get(i), y_co.get(i-1), SpringLayout.NORTH, img_labels.get(0));
+                // System.out.println()
+                layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, img_labels.get(i), x_co.get(i-1), SpringLayout.HORIZONTAL_CENTER, img_labels.get(0));
+                layout.putConstraint(SpringLayout.VERTICAL_CENTER, img_labels.get(i), y_co.get(i-1), SpringLayout.NORTH, img_labels.get(0));
+                System.out.println("1!");
             } else if(angles.get(i-1)<=180) {
-                layout.putConstraint(SpringLayout.EAST, img_labels.get(i), x_co.get(i-1), SpringLayout.WEST, img_labels.get(0));
-                layout.putConstraint(SpringLayout.NORTH, img_labels.get(i), y_co.get(i-1), SpringLayout.SOUTH, img_labels.get(0));
+                layout.putConstraint(SpringLayout.EAST, img_labels.get(i), y_co.get(i-1), SpringLayout.WEST, img_labels.get(0));
+                layout.putConstraint(SpringLayout.NORTH, img_labels.get(i), x_co.get(i-1), SpringLayout.SOUTH, img_labels.get(0));
             
+            } else if(angles.get(i-1)<=270) {
+                layout.putConstraint(SpringLayout.WEST, img_labels.get(i), y_co.get(i-1), SpringLayout.EAST, img_labels.get(0));
+                layout.putConstraint(SpringLayout.NORTH, img_labels.get(i), x_co.get(i-1), SpringLayout.SOUTH, img_labels.get(0));
+            } else {
+                layout.putConstraint(SpringLayout.WEST, img_labels.get(i), y_co.get(i-1), SpringLayout.EAST, img_labels.get(0));
+                layout.putConstraint(SpringLayout.SOUTH, img_labels.get(i), x_co.get(i-1), SpringLayout.NORTH, img_labels.get(0));
             }
             
         }        

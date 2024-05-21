@@ -62,8 +62,8 @@ public class Rows {
      */
     private int CurrX(Double relative_angle, Double actual_angle) {
 
-        Double delta_x = Math.abs(inner_rad*(Math.sin(relative_angle)));     //rsin(theta)
-        
+        Double delta_x = Math.abs(inner_rad*((Math.sin(Math.toRadians(relative_angle)))));     //rsin(theta)
+
         if(actual_angle<=180) {
             
             return ((int)Math.floor(delta_x));
@@ -74,7 +74,7 @@ public class Rows {
     }
     private int CurrY(Double relative_angle, Double actual_angle) {
 
-        Double delta_y = Math.abs(inner_rad*(Math.cos(relative_angle)));      //rcos(theta))
+        Double delta_y = Math.abs(inner_rad*((Math.cos(Math.toRadians(relative_angle)))));      //rcos(theta))
        
         if((actual_angle>=90) &&(actual_angle<=270)) {
             
@@ -113,6 +113,7 @@ public class Rows {
             img_x_co.add(curr_x);
             img_y_co.add(curr_y);
             angles.add(curr_angle);
+            // System.out.println("curr x  "+curr_x+ " curr y "+ curr_y);
             
             curr_angle = curr_angle + angle_increment;
             
@@ -143,7 +144,6 @@ public class Rows {
         for(int i=0; i<num_stitches; i++) {
             
             MyImage sc = new MyImage("SC.png", (angles.get(i)));
-            System.out.println(img_x_co.get(i)+" "+img_y_co.get(i));
            //creating sc should format the  img to be the correct rotation
            //img_x_coord and y should already be absolute locations and are find
             row.add(sc.GetImgIcon());
