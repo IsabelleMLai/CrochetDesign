@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 
 public class Rows {
     //row size will be 1> than the other arraylists sizes since it includes center image
@@ -16,7 +15,7 @@ public class Rows {
     private Double inner_rad;
     private Double outer_rad;
 
-    private final int padding = 10;     //padding around the edge of the row
+    private final int padding = 1;     //padding around the edge of the row
 
     
     /*  
@@ -28,8 +27,8 @@ public class Rows {
     private void CalcRadii_Center() {
         int inner_circumf = num_stitches*sc_dim;
         inner_rad= ((Double.valueOf(inner_circumf))/(2*Math.PI));
-        outer_rad= (inner_rad+sc_dim);
-        center_co = 2*((int) (outer_rad+padding));
+        outer_rad= (inner_rad+(sc_dim/2));
+        center_co = ((int) (outer_rad+(padding/2)));
     }
 
     /*
@@ -168,6 +167,7 @@ public class Rows {
 
         MyImage sc = new MyImage("SC.png");
         sc_dim = sc.GetScaledDim();      //need the scaled img dimensions to find correct coords
+        System.out.println("scaled dim "+sc_dim);
         
         CalcCoords();
         CreateStitches();
@@ -176,6 +176,10 @@ public class Rows {
 
     public ArrayList<ImageIcon> GetRow() {
         return row;
+    }
+
+    public int GetPadding() {
+        return padding;
     }
 
     public ArrayList<Integer> GetXCoords() {

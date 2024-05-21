@@ -108,7 +108,7 @@ public class MyImage {
 
     /*
      * rotate the img
-     *      - angle param in degrees, rotates counter clock wise
+     *      - angle param in degrees, rotates clock wise?
      *      - size of new image is the size of original square image's diagonal diameter
      *          - rotation angle doesn't matter
      *      - point of rotation is the center of the image
@@ -119,15 +119,17 @@ public class MyImage {
                     //  =  AdjustRotationDeg(x_co, y_co);
         int dim = buff_img.getWidth();              //images will always be square
         
-        int new_diameter = (int) (2*(Math.ceil(((dim/2) * (Math.sqrt(2))))));
+        int new_diameter = (int) (Math.sqrt(dim*dim*2));
             
         //set dimensions  of final adjusted image
         BufferedImage rotated = new BufferedImage(new_diameter, new_diameter, buff_img.getType());
         Graphics2D graphic = rotated.createGraphics();
 
-        graphic.rotate(Math.toRadians(angle_deg), dim/2, dim/2);
+        graphic.rotate(Math.toRadians((-1*angle)), dim/2, dim/2);
         graphic.drawRenderedImage(buff_img, null);
         graphic.dispose();
+
+        // System.out.println("dimm "  + dim);
         return rotated;
     }
 
@@ -145,7 +147,7 @@ public class MyImage {
         this.angle = angle;
 
         if(img_name.equals( "Center_10x10.png")) {
-            scale_dim = 10;
+            scale_dim = 1;
         } else {
             scale_dim = 50;
         }
@@ -160,7 +162,7 @@ public class MyImage {
         scale_dim = 1;
 
         if(img_name.equals("Center_10x10.png")) {
-            scale_dim = 10;
+            scale_dim = 1;
         } else {
             scale_dim = 50;
         }
