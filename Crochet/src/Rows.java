@@ -7,7 +7,7 @@ public class Rows {
     private int center_co;
     private int num_stitches;
     private int sc_dim;
-    private int spacing = 0;
+    private int spacing = 0;        //dependeent on sizing  of the st
     private Double inner_rad;
     private Double outer_rad;
 

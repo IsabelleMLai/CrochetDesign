@@ -24,7 +24,7 @@ public class Crochet {
         // myFrame.add(label);
         // myFrame.setVisible(true);
 
-        Rows row1 = new Rows("SC.png", num_stitches);
+        Rows row1 = new Rows("HDC.png", num_stitches);
         
         MyPanel panel = new MyPanel(frame_dim, row1, padding);
 

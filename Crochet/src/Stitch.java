@@ -28,10 +28,10 @@ public class Stitch {
                 scaled_dim = 3;
             break;
             case("SC.png"):
-                scaled_dim = 20;
+                scaled_dim = 40;
             break;
             case("HDC.png"):
-                scaled_dim = 50;
+                scaled_dim = 20;
             break;
             case("CH.png"):
                 scaled_dim = 40;
