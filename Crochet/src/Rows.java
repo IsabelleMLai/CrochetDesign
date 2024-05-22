@@ -1,23 +1,16 @@
 import java.util.ArrayList;
-import javax.swing.*;
 
 public class Rows {
-    //row size will be 1> than the other arraylists sizes since it includes center image
-    private ArrayList<ImageIcon> row;
-
-    private ArrayList<Integer> img_x_co;
-    private ArrayList<Integer> img_y_co;
-    private ArrayList<Double> angles;
+    private ArrayList<Stitch> stitches;
+    private String stitch_type;
 
     private int center_co;
     private int num_stitches;
     private int sc_dim;
+    private int spacing = 0;
     private Double inner_rad;
     private Double outer_rad;
 
-    private final int padding = 1;     //padding around the edge of the row
-
-    
     /*  
      * Calculate the image radii = bounds of the row, and absolute center coordinate
      * if we want the image aligned at top left of frame
@@ -25,10 +18,10 @@ public class Rows {
      *      - will use top left of the imageicons in layout
      */
     private void CalcRadii_Center() {
-        int inner_circumf = num_stitches*sc_dim;
+        int inner_circumf = num_stitches * (sc_dim-spacing);
         inner_rad= ((Double.valueOf(inner_circumf))/(2*Math.PI));
         outer_rad= (inner_rad+(sc_dim/2));
-        center_co = ((int) (outer_rad+(padding/2)));
+        center_co = (int)(Math.ceil(outer_rad));
     }
 
     /*
@@ -43,43 +36,37 @@ public class Rows {
     
     /*
      * Add center image to arraylist
-     *      - global variables updated to correct values at this point with 
+     *      - class variables updated to correct values at this point with 
      *        CalcRadii_Center call
      */
     private void AddCenterImg() {
         CalcRadii_Center();
-        MyImage center = new MyImage("Center_10x10.png");
-        row.add(center.GetImgIcon());
+        stitches.add(new Stitch("Center_10x10.png", center_co, center_co, 0.0));
     }
     
     
     /*
      * math used to solve for relative sc coords in CalcCoords
-     *      - top_bottom = 1 means relative is top, 0=relative is bottom
-     *      - -x = left of center, +x= right of center, -y = below centre, +y = abovee center
-     *      - rotation  is counterclockwise
+     *      - find the horizontal  and vertical distances (always positive, absolute val)
+     *      from  the center
      */
     private int CurrX(Double relative_angle, Double actual_angle) {
 
         Double delta_x = Math.abs(inner_rad*((Math.sin(Math.toRadians(relative_angle)))));     //rsin(theta)
 
         if(actual_angle<=180) {
-            
             return ((int)Math.floor(delta_x));
         } 
         return ((int)Math.ceil(delta_x));
-
-        
     }
+
     private int CurrY(Double relative_angle, Double actual_angle) {
 
         Double delta_y = Math.abs(inner_rad*((Math.cos(Math.toRadians(relative_angle)))));      //rcos(theta))
-       
+
         if((actual_angle>=90) &&(actual_angle<=270)) {
-            
             return ((int)(Math.floor(delta_y)));
         }
-
         return ((int)(Math.ceil(delta_y)));
     }
 
@@ -104,15 +91,11 @@ public class Rows {
         
         int relative_y = curr_y;
 
-        Double curr_angle = 0.0;    //in degrees, >0 = counterclockwise direction
+        Double curr_angle = 0.0;    //in degrees
         Double relative_angle = curr_angle;     //angle to use sin and cos on
 
         for(int i=0; i<num_stitches; i++) {
-            
-            img_x_co.add(curr_x);
-            img_y_co.add(curr_y);
-            angles.add(curr_angle);
-            // System.out.println("curr x  "+curr_x+ " curr y "+ curr_y);
+            stitches.add(new Stitch(stitch_type, curr_x, curr_y, curr_angle));
             
             curr_angle = curr_angle + angle_increment;
             
@@ -137,61 +120,33 @@ public class Rows {
 
 
     /*
-     * fills out rows arraylist with the correct oriented imgs
-     */
-    private void CreateStitches() {
-        for(int i=0; i<num_stitches; i++) {
-            
-            MyImage sc = new MyImage("SC.png", (angles.get(i)));
-           //creating sc should format the  img to be the correct rotation
-           //img_x_coord and y should already be absolute locations and are find
-            row.add(sc.GetImgIcon());
-        } 
-    }
-    
-
-    /*
      * Constructor
      */
-    public Rows(int num_stitches) {
-        row = new ArrayList<ImageIcon>();
-        img_x_co = new ArrayList<Integer>();
-        img_y_co = new ArrayList<Integer>();
-        angles = new ArrayList<Double>();
-
-        center_co = padding;
+    public Rows(String  stitch_type, int num_stitches) {
+        stitches = new ArrayList<Stitch>();
+        center_co = 0;
         inner_rad =  0.0;
         outer_rad = 0.0;
 
         this.num_stitches = num_stitches;
+        this.stitch_type = stitch_type;
 
-        MyImage sc = new MyImage("SC.png");
-        sc_dim = sc.GetScaledDim();      //need the scaled img dimensions to find correct coords
-        System.out.println("scaled dim "+sc_dim);
+        Stitch sc = new  Stitch(stitch_type);
+        sc_dim = sc.GetScaleDim();      //need the scaled img dimensions to find correct coords
         
         CalcCoords();
-        CreateStitches();
-        
     }
 
-    public ArrayList<ImageIcon> GetRow() {
-        return row;
+    public ArrayList<Stitch> GetRow() {
+        return stitches;
     }
 
-    public int GetPadding() {
-        return padding;
+    public Stitch GetStitch(int index) {
+        return stitches.get(index);
     }
 
-    public ArrayList<Integer> GetXCoords() {
-        return img_x_co;
-    }
-
-    public ArrayList<Integer> GetYCoords() {
-        return img_y_co;
-    }
-
-    public ArrayList<Double> GetAngles() {
-       return angles;
+    public int GetSize() {
+        return stitches.size();
     }
 
     public int  GetCenterCoord() {

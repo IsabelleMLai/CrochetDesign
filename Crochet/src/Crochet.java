@@ -2,6 +2,8 @@
 
 public class Crochet {
     static int frame_dim = 900;
+    static int num_stitches = 30;
+    static int padding = 50;
     
     public static void main(String[]  args) {
         // JLabel label= new JLabel();
@@ -22,11 +24,9 @@ public class Crochet {
         // myFrame.add(label);
         // myFrame.setVisible(true);
 
-        Rows row1 = new Rows(6);
+        Rows row1 = new Rows("SC.png", num_stitches);
         
-        MyPanel panel = new MyPanel(frame_dim, row1.GetRow(), 
-                row1.GetCenterCoord(), row1.GetPadding(), row1.GetXCoords(), 
-                row1.GetYCoords(), row1.GetAngles());
+        MyPanel panel = new MyPanel(frame_dim, row1, padding);
 
         MyFrame frame = new MyFrame(frame_dim, panel);
         frame.setVisible(true);
